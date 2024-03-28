@@ -217,12 +217,7 @@ def get_world_size() -> int:
     Returns:
         int: The world size.
     """
-    return _get_distributed_config_var(
-        env_var='WORLD_SIZE',
-        human_name='world size',
-        default=1,
-        fetch_fn_name='get_world_size',
-    )
+    return 1
 
 
 def get_global_rank() -> int:
@@ -231,7 +226,7 @@ def get_global_rank() -> int:
     Returns:
         int: The global rank.
     """
-    return _get_distributed_config_var(env_var='RANK', human_name='global rank', default=0, fetch_fn_name='get_rank')
+    return 0
 
 
 def get_local_world_size() -> int:
@@ -240,7 +235,7 @@ def get_local_world_size() -> int:
     Returns:
         int: The local world size.
     """
-    return _get_distributed_config_var(env_var='LOCAL_WORLD_SIZE', default=1, human_name='local world size')
+    return 1
 
 
 def get_local_rank() -> int:
@@ -249,7 +244,7 @@ def get_local_rank() -> int:
     Returns:
         int: The local rank.
     """
-    return _get_distributed_config_var(env_var='LOCAL_RANK', default=0, human_name='local rank')
+    return 0
 
 
 def get_node_rank() -> int:
@@ -261,7 +256,7 @@ def get_node_rank() -> int:
     Returns:
         int: The node rank, starting at 0.
     """
-    return _get_distributed_config_var(env_var='NODE_RANK', default=0, human_name='node rank')
+    return 0
 
 
 def barrier(group=None) -> None:
@@ -275,9 +270,9 @@ def barrier(group=None) -> None:
         group (ProcessGroup, optional): The process group to work on. If ``None``,
             the default process group will be used. Default is ``None``.
     """
-    if dist.is_available() and dist.is_initialized():
-        dist.barrier(group=group)
-        return
+    #if dist.is_available() and dist.is_initialized():
+    #    dist.barrier(group=group)
+    #    return
     world_size = get_world_size()
     if world_size == 1:
         return
@@ -325,10 +320,10 @@ def all_reduce(
     Returns:
         None: ``tensor`` is modified in-place.
     """
-    if dist.is_available() and dist.is_initialized():
-        reduce_op = getattr(dist.ReduceOp, reduce_operation.upper())
-        dist.all_reduce(tensor, op=reduce_op, group=group)
-        return
+    #if dist.is_available() and dist.is_initialized():
+    #    reduce_op = getattr(dist.ReduceOp, reduce_operation.upper())
+    #    dist.all_reduce(tensor, op=reduce_op, group=group)
+    #    return
     world_size = get_world_size()
     if world_size == 1:
         return
@@ -354,9 +349,9 @@ def broadcast(tensor: torch.Tensor, src: int, group=None) -> None:
         group (ProcessGroup, optional): The process group to work on. If ``None``,
             the default process group will be used. Default is ``None``.
     """
-    if dist.is_available() and dist.is_initialized():
-        dist.broadcast(tensor, src=src, group=group)
-        return
+    #if dist.is_available() and dist.is_initialized():
+    #    dist.broadcast(tensor, src=src, group=group)
+    #    return
     world_size = get_world_size()
     if world_size == 1:
         return
@@ -388,11 +383,11 @@ def broadcast_object_list(object_list: List[Any], src: int = 0, group=None) -> N
     Returns:
         None:  ``object_list`` will be modified in-place and set to values of ``object_list`` from the ``src`` rank.
     """
-    if dist.is_available() and dist.is_initialized():
-        dist.broadcast_object_list(object_list, src=src, group=group)
+    #if dist.is_available() and dist.is_initialized():
+    #    dist.broadcast_object_list(object_list, src=src, group=group)
         # torch.distributed will replace the None's in obj_gather_list with the gathered objects on rank 0
         # or will just be None on non-rank-0
-        return
+    #    return
     world_size = get_world_size()
     if world_size == 1:
         return
@@ -418,10 +413,10 @@ def all_gather(tensor: torch.Tensor, group=None) -> Sequence[torch.Tensor]:
     Returns:
         Sequence[Tensor]: A sequence of tensors indexed by rank.
     """
-    if dist.is_available() and dist.is_initialized():
-        obj_gather_list = [torch.zeros_like(tensor) for _ in range(get_world_size())]
-        dist.all_gather(obj_gather_list, tensor, group=group)
-        return obj_gather_list
+    #if dist.is_available() and dist.is_initialized():
+    #    obj_gather_list = [torch.zeros_like(tensor) for _ in range(get_world_size())]
+    #    dist.all_gather(obj_gather_list, tensor, group=group)
+    #    return obj_gather_list
     world_size = get_world_size()
     if world_size == 1:
         return [tensor]
@@ -447,15 +442,15 @@ def all_gather_object(obj: TObj, group=None) -> List[TObj]:
     Returns:
         List[TObj]: A list of objects indexed by rank.
     """
-    if dist.is_available() and dist.is_initialized():
-        obj_gather_list = [None for _ in range(get_world_size())]
-        if is_hpu_installed():
-            all_gather_object_list_hpu(obj_gather_list, obj, group=group)
-        else:
-            dist.all_gather_object(obj_gather_list, obj, group=group)
+    #if dist.is_available() and dist.is_initialized():
+    #    obj_gather_list = [None for _ in range(get_world_size())]
+    #    if is_hpu_installed():
+    #        all_gather_object_list_hpu(obj_gather_list, obj, group=group)
+    #    else:
+    #        dist.all_gather_object(obj_gather_list, obj, group=group)
         # torch.distributed will replace the None's in obj_gather_list with the gathered objects on rank 0
         # or will just be None on non-rank-0
-        return cast(List[TObj], obj_gather_list)
+    #    return cast(List[TObj], obj_gather_list)
     world_size = get_world_size()
     if world_size == 1:
         return [obj]
@@ -476,7 +471,7 @@ def is_available():
     Returns:
         bool: Whether PyTorch distributed support is available.
     """
-    return dist.is_available()
+    return True
 
 
 def is_initialized():
@@ -487,7 +482,7 @@ def is_initialized():
     Returns:
         bool: Whether PyTorch distributed is initialized.
     """
-    return dist.is_initialized()
+    return True
 
 
 def initialize_dist(device: Union[str, Device], timeout: float = 300.0):
@@ -515,6 +510,7 @@ def initialize_dist(device: Union[str, Device], timeout: float = 300.0):
         timeout (float, optional): The timeout for operations executed against the process
             group, expressed in seconds. (default: ``300.0``).
     """
+    return
     # If device is string, get corresponding composer.devices.Device object
     device_obj = get_device(device)
     timeout_timedelta = datetime.timedelta(seconds=timeout)
@@ -608,13 +604,14 @@ def get_sampler(
     Returns:
         torch.utils.data.distributed.DistributedSampler: The sampler.
     """
-    return torch.utils.data.DistributedSampler[int](
-        dataset,
-        drop_last=drop_last,
-        shuffle=shuffle,
-        num_replicas=get_world_size() if num_replicas is None else num_replicas,
-        rank=get_global_rank() if rank is None else rank,
-    )
+    return torch.utils.data.SequentialSampler(dataset)
+    #return torch.utils.data.DistributedSampler[int](
+    #    dataset,
+    #    drop_last=drop_last,
+    #    shuffle=shuffle,
+    #    num_replicas=get_world_size() if num_replicas is None else num_replicas,
+    #    rank=get_global_rank() if rank is None else rank,
+    #)
 
 
 @contextmanager
@@ -657,15 +654,15 @@ def run_local_rank_zero_first():
     ranks attempt to download the dataset to the
     same location.
     """
-    if dist.is_available() and dist.is_initialized():
+    #if dist.is_available() and dist.is_initialized():
         # hold non-zero ranks until rank zero done
-        if get_local_rank() != 0:
-            dist.barrier()
-            yield
-        else:
-            yield
-            dist.barrier()
-        return
+    #    if get_local_rank() != 0:
+    #        dist.barrier()
+    #        yield
+    #    else:
+    #        yield
+    #        dist.barrier()
+    #    return
     world_size = get_world_size()
     if world_size == 1:
         yield
