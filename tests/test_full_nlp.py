@@ -255,7 +255,14 @@ def test_full_nlp_pipeline(
     """
     pytest.importorskip('libcloud')
     pytest.importorskip('transformers')
+    import os
+    import random
 
+    random_hash = str(random.getrandbits(12))
+    os.makedirs(f"./test_filesystem_nonsense_{random_hash}")
+    print(os.listdir('./'))
+
+    tmp_path = f"./test_filesystem_nonsesnse_{random_hash}"
     if onnx_opset_version == None and version.parse(torch.__version__) < version.parse('1.13'):
         pytest.skip("Don't test prior PyTorch version's default Opset version.")
 
