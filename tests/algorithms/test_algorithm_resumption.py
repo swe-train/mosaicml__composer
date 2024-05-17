@@ -25,7 +25,7 @@ from tests.common.markers import world_size
 @pytest.mark.filterwarnings(r'ignore:.*Plan failed with a cudnnException.*:UserWarning')  # Torch 2.3 regression
 @world_size(1, 2)
 def test_algorithm_resumption(
-    tmp_path: pathlib.Path,
+    tmp_path: pathlib.Path | str,
     alg_cls: Type[Algorithm],
     world_size,
 ):
