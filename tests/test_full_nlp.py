@@ -258,7 +258,7 @@ def test_full_nlp_pipeline(
     import os
     import random
 
-    random_hash = str(random.getrandbits(12))
+    random_hash = str(random.getrandbits(128))
     os.makedirs(f"./test_filesystem_nonsense_{random_hash}")
     print(os.listdir('./'))
 

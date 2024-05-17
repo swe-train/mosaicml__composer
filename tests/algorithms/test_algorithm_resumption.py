@@ -32,8 +32,8 @@ def test_algorithm_resumption(
     import os
     import random
 
-    random_hash = str(random.getrandbits(12))
-    os.makedirs(f"./test_filesystem_nonsense_{random_hash}")
+    random_hash = str(random.getrandbits(128))
+    os.makedirs(f"./test_filesystem_nonsense_{random_hash}",)
     print(os.listdir('./'))
 
     folder1 = os.path.join(tmp_path, 'folder1')
